@@ -106,8 +106,8 @@ the hand-built analysis, and to explain any differences. The plan:
 Requires **Python 3.12**.
 
 ```bash
-git clone <this-repo-url>
-cd ab-email-test
+git clone https://github.com/suv999/ab-test-email-campaign.git
+cd ab-test-email-campaign
 
 python -m venv .venv
 # Windows:      .venv\Scripts\activate
@@ -130,7 +130,7 @@ numbers reproduce exactly. Notebook 03 takes a few minutes because of its bootst
 ## Project structure
 
 ```
-ab-email-test/
+ab-test-email-campaign/
 ├── data/
 │   ├── README.md               # column dictionary, checksum, sources
 │   ├── raw/                    # original CSV (read-only)
