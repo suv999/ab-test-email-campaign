@@ -40,7 +40,10 @@ Every statistical choice is explained in plain English in the notebooks.
 
 ## Key result
 
-![Outcomes per group](figures/02_outcomes_by_group.png)
+![Lift of each e-mail vs control, with 95% confidence intervals](figures/02_effects_forest.png)
+
+*Each e-mail's lift on spend, visits and conversion, compared with the no-e-mail control (and with each other).
+Intervals that don't cross zero are real effects. Every comparison stays significant after the Holm correction.*
 
 Results per 10,000 e-mails sent, compared with sending no e-mail, over two weeks. Ranges are 95% confidence
 intervals.
@@ -72,6 +75,31 @@ e-mail against matched and mixed-assortment creative.
   [in Markdown](reports/recommendation_memo.md);
 - [stakeholder summary](reports/stakeholder_summary.md);
 - [business impact and break-even tables](reports/business_impact.md).
+
+## Part 2 (coming next): validating the results in GrowthBook
+
+The next step is to re-run this experiment in [**GrowthBook**](https://www.growthbook.io/), an open-source
+experimentation platform. The aim is to check that a production A/B-testing tool reaches the same conclusions as
+the hand-built analysis, and to explain any differences. The plan:
+
+- **Load the data** into a SQL data source that GrowthBook can query (e.g. a local PostgreSQL database), as an
+  exposure table (customer, variant) and a metrics table. The dataset has no timestamps, so every customer gets
+  the same synthetic exposure date.
+- **Define the same metrics:** visit rate and conversion rate (binomial), and revenue per customer (mean).
+- **Compare the results** against notebook 02:
+  - lift and intervals;
+  - significance;
+  - the sample-ratio-mismatch check;
+  - segment drill-downs (GrowthBook dimensions) against notebook 03.
+- **Explain the differences.** These are the method choices most likely to make the numbers differ:
+  - **Bayesian vs frequentist.** GrowthBook's default engine reports "chance to win" and credible intervals,
+    while this project uses frequentist p-values and confidence intervals. GrowthBook also has a frequentist
+    engine, so both can be compared.
+  - **Relative vs absolute lift.** GrowthBook headlines percentage lift, while this project leads with absolute
+    differences (percentage points and \$ per customer).
+  - **Interval methods:** Newcombe and bootstrap intervals here, versus GrowthBook's own methods.
+  - **Outlier handling:** any revenue capping or winsorization applied to the skewed spend metric.
+  - **Multiple-comparison corrections and variance reduction (CUPED),** which depend on the settings used.
 
 ## How to reproduce
 
@@ -116,7 +144,7 @@ ab-email-test/
 │   ├── stats.py                # proportion tests, bootstrap, Welch, Holm
 │   ├── targeting.py            # policy value, bootstrap, cross-fitting
 │   └── style.py                # shared chart colours and style
-├── figures/                    # exported charts (PNG)
+├── figures/                    # exported charts (PNG); main lift chart: 02_effects_forest.png
 ├── reports/                    # memo (MD + PDF), stakeholder summary, impact tables
 ├── requirements.txt
 └── README.md
